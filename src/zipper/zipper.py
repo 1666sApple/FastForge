@@ -8,7 +8,7 @@ import os
 import zipfile
 from pathlib import Path
 from datetime import datetime
-from cleaner import DirectoryCleaner
+from cache_cleaner.cleaner import DirectoryCleaner
 
 
 class DirectoryZipper:
