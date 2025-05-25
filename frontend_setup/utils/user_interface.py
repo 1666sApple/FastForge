@@ -149,3 +149,117 @@ class UserInterface:
     def display_info(self, message):
         """Display info message."""
         print(f"\nℹ️  {message}")
+
+    def show_configuration_summary(self, framework_choice, use_typescript, app_name, setup_options):
+        """Show configuration summary and allow user to confirm or edit."""
+        framework_names = {
+            '1': 'Create React App (CRA)',
+            '2': 'Next.js',
+            '3': 'Vite React'
+        }
+
+        print("\n" + "=" * 60)
+        print("    📋 CONFIGURATION SUMMARY")
+        print("=" * 60)
+        print(f"App Name:           {app_name}")
+        print(f"Framework:          {framework_names[framework_choice]}")
+        print(
+            f"Language:           {'TypeScript' if use_typescript else 'JavaScript'}")
+        print(
+            f"Project Structure:  {'Yes' if setup_options.get('structure', False) else 'No'}")
+        print(
+            f"Common Packages:    {'Yes' if setup_options.get('packages', False) else 'No'}")
+        print(
+            f"Tailwind CSS:       {'Yes' if setup_options.get('tailwind', False) else 'No'}")
+        print("=" * 60)
+
+        while True:
+            print("\nOptions:")
+            print("1. Proceed with these settings")
+            print("2. Edit app name")
+            print("3. Change framework")
+            print("4. Change language")
+            print("5. Modify setup options")
+            print("6. Start over")
+
+            choice = input("\nWhat would you like to do? (1-6): ").strip()
+
+            if not choice:
+                print("❌ Please enter a choice. You cannot leave this field empty.")
+                continue
+
+            if choice == '1':
+                return 'proceed', None, None, None, None
+            elif choice == '2':
+                return 'edit_name', None, None, None, None
+            elif choice == '3':
+                return 'edit_framework', None, None, None, None
+            elif choice == '4':
+                return 'edit_language', None, None, None, None
+            elif choice == '5':
+                return 'edit_options', None, None, None, None
+            elif choice == '6':
+                return 'restart', None, None, None, None
+            else:
+                print("❌ Invalid choice. Please enter a number between 1-6.")
+
+    def get_complete_configuration(self):
+        """Get complete configuration from user with confirmation loop."""
+        while True:
+            # Get all configuration
+            framework_choice = self.get_framework_choice()
+            use_typescript = self.get_language_choice()
+            app_name = self.get_app_name()
+            setup_options = self.get_setup_options(framework_choice)
+
+            # Show summary and get user action
+            action, _, _, _, _ = self.show_configuration_summary(
+                framework_choice, use_typescript, app_name, setup_options)
+
+            if action == 'proceed':
+                return framework_choice, use_typescript, app_name, setup_options
+            elif action == 'edit_name':
+                app_name = self.get_app_name()
+                # Show updated summary
+                action, _, _, _, _ = self.show_configuration_summary(
+                    framework_choice, use_typescript, app_name, setup_options)
+                if action == 'proceed':
+                    return framework_choice, use_typescript, app_name, setup_options
+            elif action == 'edit_framework':
+                framework_choice = self.get_framework_choice()
+                setup_options = self.get_setup_options(
+                    framework_choice)  # Re-get options for new framework
+                # Show updated summary
+                action, _, _, _, _ = self.show_configuration_summary(
+                    framework_choice, use_typescript, app_name, setup_options)
+                if action == 'proceed':
+                    return framework_choice, use_typescript, app_name, setup_options
+            elif action == 'edit_language':
+                use_typescript = self.get_language_choice()
+                # Show updated summary
+                action, _, _, _, _ = self.show_configuration_summary(
+                    framework_choice, use_typescript, app_name, setup_options)
+                if action == 'proceed':
+                    return framework_choice, use_typescript, app_name, setup_options
+            elif action == 'edit_options':
+                setup_options = self.get_setup_options(framework_choice)
+                # Show updated summary
+                action, _, _, _, _ = self.show_configuration_summary(
+                    framework_choice, use_typescript, app_name, setup_options)
+                if action == 'proceed':
+                    return framework_choice, use_typescript, app_name, setup_options
+            elif action == 'restart':
+                continue  # Start the whole loop over
+
+    def show_command_preview(self, command, description=""):
+        """Show the command that will be executed and ask for confirmation."""
+        print("\n" + "=" * 60)
+        print("    🔧 COMMAND PREVIEW")
+        print("=" * 60)
+        if description:
+            print(f"Description: {description}")
+        print(f"Command:     {command}")
+        print("=" * 60)
+
+        return self.get_user_confirmation(
+            "\nProceed with command execution?", default=True)
