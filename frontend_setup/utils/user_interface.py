@@ -21,6 +21,9 @@ class UserInterface:
 
         while True:
             choice = input("\nEnter your choice (1-3): ").strip()
+            if not choice:
+                print("❌ Please enter a choice. You cannot leave this field empty.")
+                continue
             if choice in ['1', '2', '3']:
                 return choice
             print("❌ Invalid choice. Please enter 1, 2, or 3.")
@@ -33,6 +36,9 @@ class UserInterface:
 
         while True:
             choice = input("\nEnter your choice (1-2): ").strip()
+            if not choice:
+                print("❌ Please enter a choice. You cannot leave this field empty.")
+                continue
             if choice == '1':
                 return False  # JavaScript
             elif choice == '2':
@@ -45,7 +51,7 @@ class UserInterface:
             app_name = input("\n📝 Enter your app name: ").strip()
 
             if not app_name:
-                print("❌ App name cannot be empty.")
+                print("❌ App name cannot be empty. Please enter a valid app name.")
                 continue
 
             # Check if app name is valid (no spaces, special chars, etc.)
@@ -64,31 +70,45 @@ class UserInterface:
 
         # Ask for project structure
         structure_choice = input(
-            "Create additional project structure? (y/n): ").strip().lower()
-        setup_options['structure'] = structure_choice in ['y', 'yes']
+            "Create additional project structure? [Y/n]: ").strip().lower()
+        if not structure_choice:  # Default to yes if empty
+            setup_options['structure'] = True
+        else:
+            setup_options['structure'] = structure_choice in ['y', 'yes']
 
         # Ask for common packages
         packages_choice = input(
-            "Install common React packages? (y/n): ").strip().lower()
-        setup_options['packages'] = packages_choice in ['y', 'yes']
+            "Install common React packages? [Y/n]: ").strip().lower()
+        if not packages_choice:  # Default to yes if empty
+            setup_options['packages'] = True
+        else:
+            setup_options['packages'] = packages_choice in ['y', 'yes']
 
         # Ask for Tailwind CSS (skip for Next.js as it has built-in option)
         if framework_choice != '2':  # Not Next.js
             tailwind_choice = input(
-                "Setup Tailwind CSS? (y/n): ").strip().lower()
-            setup_options['tailwind'] = tailwind_choice in ['y', 'yes']
+                "Setup Tailwind CSS? [Y/n]: ").strip().lower()
+            if not tailwind_choice:  # Default to yes if empty
+                setup_options['tailwind'] = True
+            else:
+                setup_options['tailwind'] = tailwind_choice in ['y', 'yes']
         else:
             # For Next.js, ask if they want Tailwind during creation
             tailwind_choice = input(
-                "Include Tailwind CSS in Next.js setup? (y/n): ").strip().lower()
-            setup_options['tailwind'] = tailwind_choice in ['y', 'yes']
+                "Include Tailwind CSS in Next.js setup? [Y/n]: ").strip().lower()
+            if not tailwind_choice:  # Default to yes if empty
+                setup_options['tailwind'] = True
+            else:
+                setup_options['tailwind'] = tailwind_choice in ['y', 'yes']
 
         return setup_options
 
     def ask_start_server(self):
         """Ask if user wants to start development server."""
         choice = input(
-            "\n🚀 Start development server now? (y/n): ").strip().lower()
+            "\n🚀 Start development server now? [Y/n]: ").strip().lower()
+        if not choice:  # Default to yes if empty
+            return True
         return choice in ['y', 'yes']
 
     def show_welcome_message(self):
@@ -105,10 +125,13 @@ class UserInterface:
         print("    Happy coding! 🎉")
         print("=" * 50)
 
-    def get_user_confirmation(self, message):
-        """Get yes/no confirmation from user."""
+    def get_user_confirmation(self, message, default=True):
+        """Get yes/no confirmation from user with default option."""
+        default_text = "[Y/n]" if default else "[y/N]"
         while True:
-            choice = input(f"{message} (y/n): ").strip().lower()
+            choice = input(f"{message} {default_text}: ").strip().lower()
+            if not choice:  # Empty input, use default
+                return default
             if choice in ['y', 'yes']:
                 return True
             elif choice in ['n', 'no']:
